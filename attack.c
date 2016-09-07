@@ -10,39 +10,6 @@ int   attack_raw[ 2 ];   // unbuffered communication: attack target -> attacker
 int interactions;
 int keyFound = 0;
 
-
-
-uint8_t mul_table[256][256];
-uint8_t gf28_mul( uint8_t a, uint8_t b );
-
-int setEquation1(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]);
-int setEquation2(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]);
-int setEquation3(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]);
-int setEquation4(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]);
-
-int setsEquation1(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t k[16][1024]);
-int setsEquation2(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t k[16][1024]);
-int setsEquation3(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t k[16][1024]);
-int setsEquation4(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t k[16][1024]);
-
-uint8_t fEquation1(uint8_t x[], uint8_t x1[], uint8_t k[], uint8_t k9[]);
-uint8_t fEquation2(uint8_t x[], uint8_t x1[], uint8_t k[], uint8_t k9[]);
-uint8_t fEquation3(uint8_t x[], uint8_t x1[], uint8_t k[], uint8_t k9[]);
-uint8_t fEquation4(uint8_t x[], uint8_t x1[], uint8_t k[], uint8_t k9[]);
-
-void printState(uint8_t state[16]);
-void computeMultiplyTable();
-void getOriginalKey(uint8_t k[16], int currentRound);
-void getRoundK(uint8_t k[16], int r);
-void interact(uint8_t c[16],
-              const int fault,          /* fault or not */
-              const int r,              /*round */
-              const int f ,             /*function */
-              const int p,              /*before or after */
-              const int i,              /*i-th row */
-              const int j,              /*j-th column  */
-              const uint8_t m[16]);     /*message block */
-
 // generate random messages for multiple measurements
 void generateRandomMessage(uint8_t m[sampleSize][16]){
   // open file to read random bytes from
@@ -59,7 +26,6 @@ void generateRandomMessage(uint8_t m[sampleSize][16]){
   fclose(fp);
 
 }
-
 
 void attack(){
   uint8_t input[sampleSize][16];
@@ -302,7 +268,7 @@ void computeMultiplyTable(){
   }
 }
 
-int setEquation1(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
+int setEquation1(const uint8_t x[],  const uint8_t x1[], uint8_t k[16][1024]){
   int possibilities = 0;
   int k1, k8, k11, k14, ro;
   for(ro=1; ro <= 0xFF; ro++){
@@ -333,7 +299,7 @@ int setEquation1(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
   return possibilities;
 }
 
-int setsEquation1(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t kAll[16][1024] ){
+int setsEquation1(const uint8_t x[sampleSize][16], const uint8_t x1[sampleSize][16], uint8_t kAll[16][1024] ){
   int k1, k8, k11, k14, ro;
   uint8_t k[sampleSize][16][1024];
   int possibilities[sampleSize];
@@ -394,7 +360,8 @@ int setsEquation1(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_
   return poss;
 }
 
-int setsEquation2(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t kAll[16][1024] ){
+
+int setsEquation2(const uint8_t x[sampleSize][16], const uint8_t x1[sampleSize][16], uint8_t kAll[16][1024] ){
   int k5, k2, k15, k12, ro;
   uint8_t k[sampleSize][16][1024];
   int possibilities[sampleSize];
@@ -455,8 +422,7 @@ int setsEquation2(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_
   return poss;
 }
 
-
-int setEquation2(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
+int setEquation2(const uint8_t x[],  const uint8_t x1[], uint8_t k[16][1024]){
   int possibilities = 0;
   int k5, k2, k15, k12, ro;
   for(ro=1; ro <= 0xFF; ro++){
@@ -487,7 +453,8 @@ int setEquation2(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
   return possibilities;
 }
 
-int setsEquation3(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t kAll[16][1024] ){
+
+int setsEquation3(const uint8_t x[sampleSize][16], const uint8_t x1[sampleSize][16], uint8_t kAll[16][1024] ){
   int k9, k6, k3, k16, ro;
   uint8_t k[sampleSize][16][1024];
   int possibilities[sampleSize];
@@ -548,7 +515,7 @@ int setsEquation3(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_
   return poss;
 }
 
-int setEquation3(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
+int setEquation3(const uint8_t x[],  const uint8_t x1[], uint8_t k[16][1024]){
   int possibilities = 0;
   int k9, k6, k3, k16, ro;
   for(ro=1; ro <= 0xFF; ro++){
@@ -579,7 +546,8 @@ int setEquation3(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
   return possibilities;
 }
 
-int setsEquation4(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_t kAll[16][1024] ){
+
+int setsEquation4(const uint8_t x[sampleSize][16], const uint8_t x1[sampleSize][16], uint8_t kAll[16][1024] ){
   int k13, k10, k7, k4, ro;
   uint8_t k[sampleSize][16][1024];
   int possibilities[sampleSize];
@@ -640,8 +608,7 @@ int setsEquation4(uint8_t x[sampleSize][16], uint8_t x1[sampleSize][16],  uint8_
   return poss;
 }
 
-
-int setEquation4(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
+int setEquation4(const uint8_t x[],  const uint8_t x1[], uint8_t k[16][1024]){
   int possibilities = 0;
   int k13, k10, k7, k4, ro;
   for(ro=1; ro <= 0xFF; ro++){
@@ -672,7 +639,8 @@ int setEquation4(uint8_t x[],  uint8_t x1[], uint8_t k[16][1024]){
   return possibilities;
 }
 
-uint8_t fEquation1(uint8_t x[16], uint8_t x1[], uint8_t k[], uint8_t k9[]){
+
+uint8_t fEquation1(const uint8_t x[16], const uint8_t x1[16], const uint8_t k[16], const uint8_t k9[16]){
   uint8_t result;
 
   result = inv_s[ mul_table[14][ inv_s[ x[0]  ^  k[0] ] ^ k9[0] ] ^
@@ -688,7 +656,7 @@ uint8_t fEquation1(uint8_t x[16], uint8_t x1[], uint8_t k[], uint8_t k9[]){
   return result;
 }
 
-uint8_t fEquation2(uint8_t x[16], uint8_t x1[16], uint8_t k[16], uint8_t k9[16]){
+uint8_t fEquation2(const uint8_t x[16], const uint8_t x1[16], const uint8_t k[16], const uint8_t k9[16]){
   uint8_t a, b;
   uint8_t result1;
 
@@ -707,7 +675,7 @@ uint8_t fEquation2(uint8_t x[16], uint8_t x1[16], uint8_t k[16], uint8_t k9[16])
   return result1;
 }
 
-uint8_t fEquation3(uint8_t x[], uint8_t x1[], uint8_t k[], uint8_t k9[]){
+uint8_t fEquation3(const uint8_t x[16], const uint8_t x1[16], const uint8_t k[16], const uint8_t k9[16]){
   uint8_t result;
 
   result = inv_s[ mul_table[13][ inv_s[ x[8]  ^  k[8] ] ^ k9[8]  ] ^
@@ -723,7 +691,7 @@ uint8_t fEquation3(uint8_t x[], uint8_t x1[], uint8_t k[], uint8_t k9[]){
   return result;
 }
 
-uint8_t fEquation4(uint8_t x[16], uint8_t x1[16], uint8_t k[16], uint8_t k9[16]){
+uint8_t fEquation4(const uint8_t x[16], const uint8_t x1[16], const uint8_t k[16], const uint8_t k9[16]){
   uint8_t result;
 
 
@@ -746,7 +714,7 @@ void getOriginalKey(uint8_t k[16], int currentRound){
   }
 }
 
-void getRoundK(uint8_t k[16], int r){
+void getRoundK(uint8_t k[16], const int r){
   k[12] ^=  k[8];
   k[13] ^=  k[9];
   k[14] ^=  k[10];
@@ -768,7 +736,7 @@ void getRoundK(uint8_t k[16], int r){
   k[3] ^=  s[ k[12]  ];
 }
 
-void printState(uint8_t state[16]){
+void printState(const uint8_t state[16]){
   for(int i=0; i<16; i++){
       if(i%4 == 0)
         printf("\n");
